@@ -54,21 +54,21 @@ export default class RootStore {
 
   fetchRequest = async (url, params, fetchOpts) => {
     console.log("Fetching to url :", url)
-    let data = JSON.stringify(params)
+    let body = JSON.stringify(params)
     if(fetchOpts.formData){
-      data = params
+      body = params
     }
     const method = fetchOpts.method ? fetchOpts.method : "GET"
-    console.log("here");
 
     const headers = this.headers(url, Boolean(fetchOpts.formData))
 
     try{
-      const res = await axios({
+      const res = await axios.request({
         method:method,
         url:url,
         body:body,
-        headers:headers
+        headers:headers,
+        responseType: 'json'
       });
       return res
     }catch(err){

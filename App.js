@@ -21,7 +21,6 @@ export default function App(props) {
   } else {
     return (
       <View style={styles.container}>
-        {<StatusBar barStyle="default" />}
         <AppNavigator />
       </View>
     );
@@ -31,8 +30,7 @@ export default function App(props) {
 async function loadResourcesAsync() {
   await Promise.all([
     Asset.loadAsync([
-      require('./assets/images/robot-dev.png'),
-      require('./assets/images/robot-prod.png'),
+      // require('./assets/images/robot-dev.png'),
     ]),
     Font.loadAsync({
       // This is the font that we are using for our tab bar
@@ -59,6 +57,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+    paddingTop:10
   },
 });
 
