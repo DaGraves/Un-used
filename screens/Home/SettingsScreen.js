@@ -11,7 +11,6 @@ export default class SettingsScreen extends React.Component {
   render(){
     return (
       <View>
-        <Text>{User.teste}</Text>
         <ExpoConfigView />
       </View>
     );

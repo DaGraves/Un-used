@@ -11,8 +11,8 @@ export default class SignIn extends React.Component {
     return (
       <Container>
         <Body>
-          <View style={styles.container}>
-
+          <View style={{backgroundColor:"red"}}>
+            <Text>Here</Text>
           </View>
         </Body>
       </Container>

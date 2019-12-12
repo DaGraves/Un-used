@@ -13,8 +13,8 @@ const config = Platform.select({
 
 const OnboardStack = createStackNavigator(
   {
-    SignUp: SignUp,
     SignIn: SignIn,
+    SignUp: SignUp
   },
   config
 );

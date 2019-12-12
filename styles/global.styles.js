@@ -1,11 +1,25 @@
-import { StyleSheet } from 'react-native'
+import { StyleSheet, Dimensions } from "react-native";
 
 const styles = StyleSheet.create({
-  container:{
+  body: {
+    width: "100%",
     flex: 1,
-    padding: 20,
-    width:"100%"
+    paddingTop: 30
+  },
+  container: {
+    padding: 50,
+    flex: 1,
+    width: Dimensions.get("window").width
+  },
+  form:{
+    width:"100%",
+  },
+  row:{
+    flexDirection:"row"
+  },
+  column:{
+    flexDirection:"column"
   }
 });
 
-export default styles
+export default styles;
