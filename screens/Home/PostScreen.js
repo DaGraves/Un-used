@@ -1,14 +1,23 @@
 import React from "react";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
+import { View, StyleSheet, TouchableOpacity, Dimensions } from "react-native";
 import { User } from "../../stores";
-import { Button, Text, Container, Body, Spinner, Content } from "native-base";
+import {
+  Button,
+  Text,
+  Container,
+  Body,
+  Spinner,
+  Content,
+  Icon
+} from "native-base";
 import { observer } from "mobx-react";
 import styles from "../../styles/Home/Post.styles";
 import { Camera } from "expo-camera";
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import * as Permissions from 'expo-permissions';
+import * as ImagePicker from 'expo-image-picker';
 @observer
-export default class PostScreen extends React.Component {
+class PostScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -20,44 +29,114 @@ export default class PostScreen extends React.Component {
 
   async componentDidMount() {
     const { status } = await Camera.requestPermissionsAsync();
-    console.log(status);
-
     this.setState({
       hasPermissions: status === "granted",
       finishedLoading: true
     });
   }
 
+  rotateCamera() {
+
+    this.setState({
+      type:
+        this.state.type === Camera.Constants.Type.back
+          ? Camera.Constants.Type.front
+          : Camera.Constants.Type.back
+    });
+  }
+
+  async openLibrary(){
+    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL)
+    if (status === 'granted') {
+      const image = await ImagePicker.launchImageLibraryAsync()
+      if(!image.cancelled){
+        console.log(image);
+
+      }
+    }
+  }
+
+  async takePicture() {
+    try {
+      let photo = await this.camera.takePictureAsync();
+      console.log(photo);
+    } catch (e) {
+      alert(e);
+    }
+  }
   render() {
     return (
       <Container>
         <Body style={styles.body}>
-          <KeyboardAwareScrollView enableOnAndroid>
+          <KeyboardAwareScrollView
+            enableOnAndroid
+            contentContainerStyle={styles.kav}
+          >
             <Content contentContainerStyle={styles.container}>
-              {!this.state.finishedLoading && (
+              {!this.state.finishedLoading && this.state.hasPermissions && (
                 <View
                   style={{ alignContent: "center", justifyContent: "center" }}
                 >
                   <Spinner width="100" color="blue" />
                 </View>
               )}
-              {this.state.finishedLoading && (
-                <Camera style={{ flex: 1 }} type={this.state.type}>
-                  <View style={styles.cameraWrapper}>
+              {this.state.finishedLoading && !this.state.hasPermissions && (
+                <View
+                  style={{ alignContent: "center", justifyContent: "center" }}
+                >
+                  <Text>
+                    Please give the application permissions to use the camera
+                  </Text>
+                </View>
+              )}
+              {this.state.finishedLoading && this.state.hasPermissions && (
+                <View style={styles.cameraWrapper}>
+                  <Camera
+                    style={styles.camera}
+                    type={this.state.type}
+                    ref={ref => {
+                      this.camera = ref;
+                    }}
+                  />
+
+                  <View style={styles.cameraActionsBottomWrapper}>
                     <TouchableOpacity
-                      style={styles.changeType}
+                      style={styles.cameraActionsBottomIconWrapper}
+                      onPress={() => this.rotateCamera()}
+                    >
+                      <Icon
+                        name="rotate-left"
+                        type="FontAwesome"
+                        style={styles.cameraActionsBottomIcon}
+                      />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={styles.takePictureWrapper}
                       onPress={() => {
-                        this.setState(prevState => {
-                          prevState.type === Camera.Constants.Type.back
-                            ? Camera.Constants.Type.front
-                            : Camera.Constants.Type.back;
-                        });
+                        this.takePicture();
                       }}
                     >
-                      <Text style={styles.flip}>Flip</Text>
+                      <Icon
+                        name="circle-outline"
+                        type="MaterialCommunityIcons"
+                        style={{ color: "#fff" }}
+                        style={styles.takePicture}
+                      />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={styles.cameraActionsBottomIconWrapper}
+                      onPress={() => this.openLibrary()}
+                    >
+                      <Icon
+                        name="file-outline"
+                        type="MaterialCommunityIcons"
+                        style={styles.cameraActionsBottomIcon}
+                      />
                     </TouchableOpacity>
                   </View>
-                </Camera>
+                </View>
               )}
             </Content>
           </KeyboardAwareScrollView>
@@ -68,5 +147,8 @@ export default class PostScreen extends React.Component {
 }
 
 PostScreen.navigationOptions = {
-  header: null
+  header: null,
+  tabBarVisible: false
 };
+
+export default PostScreen;

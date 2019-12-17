@@ -9,12 +9,13 @@ import {
   Icon,
   Title
 } from "native-base";
+import { withNavigation } from 'react-navigation';
 
-export default function AppHeader(props) {
+const AppHeader = (props) => {
   return (
     <Header>
       <Left>
-        <Button transparent>
+        <Button transparent onPress={() => {props.navigation.goBack(null)}}>
           <Icon name="arrow-back" />
         </Button>
       </Left>
@@ -29,3 +30,6 @@ export default function AppHeader(props) {
     </Header>
   );
 }
+
+
+export default withNavigation(AppHeader)

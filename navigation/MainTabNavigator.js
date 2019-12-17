@@ -1,5 +1,5 @@
 import React from "react";
-import { Platform, View } from "react-native";
+import { Platform, View, Text } from "react-native";
 import { createStackNavigator } from "react-navigation-stack";
 import { createBottomTabNavigator } from "react-navigation-tabs";
 import AppHeader from "../components/AppHeader";
@@ -53,22 +53,34 @@ const SearchStack = createStackNavigator(
 
 const PostStack = createStackNavigator(
   {
-    Post: PostScreen
+    Post:PostScreen,
+    Confirm:{
+      screen: ({ navigation }) => (
+        <View style={{backgroundColor:"red",height:200}}><Text>asdasd</Text></View>
+      ),
+    }
   },
   {
     defaultNavigationOptions: {
       header: <AppHeader />
     },
-    navigationOptions: {
-      tabBarLabel: <View />,
-      tabBarIcon: ({ focused }) => (
-        <TabBarIcon
-          focused={focused}
-          type={"Ionicons"}
-          name={`ios-add-circle${focused ? "" : "-outline"}`}
-        />
-      )
+    navigationOptions: ({ navigation }) => {
+      const state = navigation.state
+      const currentRoute = state.routes[state.index]
+      return {
+        tabBarVisible:!["Post"].includes(currentRoute.routeName),
+        tabBarLabel: <View/>,
+        tabBarIcon: ({ focused }) => (
+          <TabBarIcon
+            focused={focused}
+            type={"Ionicons"}
+            name={`ios-add-circle${focused ? "" : "-outline"}`}
+          />
+        )
+      }
     }
+
+
   }
 );
 
@@ -99,7 +111,5 @@ const tabNavigator = createBottomTabNavigator({
   PostStack,
   SettingsStack
 });
-
-tabNavigator.path = "";
 
 export default tabNavigator;
