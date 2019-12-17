@@ -29,6 +29,9 @@ const styles = StyleSheet.create({
   camera:{
     flex:7,
   },
+  uploadImage:{
+    flex:7,
+  },
   flip: {
     fontSize: 18,
     marginBottom: 10,
@@ -42,8 +45,7 @@ const styles = StyleSheet.create({
     left:0,
     flex:3,
     padding:10,
-    backgroundColor: "#000",
-    opacity:0.5,
+    backgroundColor: "rgba(0,0,0,0.7)",
     width: Dimensions.get("window").width,
     alignContent:"center",
     justifyContent:"center",
@@ -58,7 +60,8 @@ const styles = StyleSheet.create({
   cameraActionsBottomIconWrapper: {
     justifyContent:"center",
     alignContent:"center",
-    flex:1
+    flex:1,
+    textAlign:"center"
   },
 
   cameraActionsBottomIcon: {
@@ -72,6 +75,11 @@ const styles = StyleSheet.create({
     color: "white",
     alignSelf:"center",
   },
+
+  confirmActionText:{
+    color:"white",
+    alignSelf:"center"
+  }
 });
 
 export default styles;

@@ -1,6 +1,6 @@
 import React from "react";
 import { View, StyleSheet, TouchableOpacity, Dimensions } from "react-native";
-import { User } from "../../stores";
+import { Post } from "../../../stores";
 import {
   Button,
   Text,
@@ -11,7 +11,7 @@ import {
   Icon
 } from "native-base";
 import { observer } from "mobx-react";
-import styles from "../../styles/Home/Post.styles";
+import styles from "../../../styles/Home/Post.styles";
 import { Camera } from "expo-camera";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import * as Permissions from 'expo-permissions';
@@ -51,7 +51,8 @@ class PostScreen extends React.Component {
       const image = await ImagePicker.launchImageLibraryAsync()
       if(!image.cancelled){
         console.log(image);
-
+        Post.uploadPicture = image
+        this.props.navigation.navigate("Confirm")
       }
     }
   }
@@ -60,6 +61,8 @@ class PostScreen extends React.Component {
     try {
       let photo = await this.camera.takePictureAsync();
       console.log(photo);
+      Post.uploadPicture = photo
+      this.props.navigation.navigate("Confirm")
     } catch (e) {
       alert(e);
     }

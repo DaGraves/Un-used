@@ -6,7 +6,8 @@ import AppHeader from "../components/AppHeader";
 
 import TabBarIcon from "../components/TabBarIcon";
 import HomeScreen from "../screens/Home/HomeScreen";
-import PostScreen from "../screens/Home/PostScreen";
+import PostScreen from "../screens/Home/Posts/PostScreen";
+import ConfirmPost from "../screens/Home/Posts/ConfirmPost";
 import SettingsScreen from "../screens/Home/SettingsScreen";
 
 const HomeStack = createStackNavigator(
@@ -54,11 +55,7 @@ const SearchStack = createStackNavigator(
 const PostStack = createStackNavigator(
   {
     Post:PostScreen,
-    Confirm:{
-      screen: ({ navigation }) => (
-        <View style={{backgroundColor:"red",height:200}}><Text>asdasd</Text></View>
-      ),
-    }
+    Confirm:ConfirmPost
   },
   {
     defaultNavigationOptions: {
