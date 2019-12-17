@@ -1,63 +1,105 @@
-import React from 'react';
-import { Platform } from 'react-native';
-import { createStackNavigator } from 'react-navigation-stack';
-import { createBottomTabNavigator } from 'react-navigation-tabs';
+import React from "react";
+import { Platform, View } from "react-native";
+import { createStackNavigator } from "react-navigation-stack";
+import { createBottomTabNavigator } from "react-navigation-tabs";
+import AppHeader from "../components/AppHeader";
 
-import TabBarIcon from '../components/TabBarIcon';
-import HomeScreen from '../screens/Home/HomeScreen';
-import SettingsScreen from '../screens/Home/SettingsScreen';
-
-
-const config = Platform.select({
-  web: { headerMode: 'screen' },
-  default: {},
-});
+import TabBarIcon from "../components/TabBarIcon";
+import HomeScreen from "../screens/Home/HomeScreen";
+import PostScreen from "../screens/Home/PostScreen";
+import SettingsScreen from "../screens/Home/SettingsScreen";
 
 const HomeStack = createStackNavigator(
   {
-    Home: HomeScreen,
+    Home: HomeScreen
   },
-  config
+  {
+    defaultNavigationOptions:{
+      header:<AppHeader/>
+    },
+    navigationOptions: {
+      tabBarLabel: <View />,
+      tabBarIcon: ({ focused }) => (
+        <TabBarIcon
+          focused={focused}
+          type="MaterialCommunityIcons"
+          name={`home${focused ? "" : "-outline"}`}
+        />
+      )
+    }
+  }
 );
 
-HomeStack.navigationOptions = {
-  tabBarLabel: 'Home',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={
-        Platform.OS === 'ios'
-          ? `ios-information-circle${focused ? '' : '-outline'}`
-          : 'md-information-circle'
-      }
-    />
-  ),
-};
+const SearchStack = createStackNavigator(
+  {
+    Search: SettingsScreen
+  },
+  {
+    defaultNavigationOptions: {
+      header: <AppHeader />
+    },
+    navigationOptions: {
+      tabBarLabel: <View />,
+      tabBarIcon: ({ focused }) => (
+        <TabBarIcon
+          focused={focused}
+          type={focused ? "FontAwesome" : "Feather"}
+          name="search"
+        />
+      )
+    }
+  }
+);
 
-HomeStack.path = '';
+const PostStack = createStackNavigator(
+  {
+    Post: PostScreen
+  },
+  {
+    defaultNavigationOptions: {
+      header: <AppHeader />
+    },
+    navigationOptions: {
+      tabBarLabel: <View />,
+      tabBarIcon: ({ focused }) => (
+        <TabBarIcon
+          focused={focused}
+          type={"Ionicons"}
+          name={`ios-add-circle${focused ? "" : "-outline"}`}
+        />
+      )
+    }
+  }
+);
 
 const SettingsStack = createStackNavigator(
   {
-    Home: SettingsScreen,
+    Settings: SettingsScreen
   },
-  config
+  {
+    defaultNavigationOptions: {
+      header: <AppHeader />
+    },
+    navigationOptions: {
+      tabBarLabel: <View />,
+      tabBarIcon: ({ focused }) => (
+        <TabBarIcon
+          focused={focused}
+          type="MaterialCommunityIcons"
+          name={`settings${focused ? "" : "-outline"}`}
+        />
+      )
+    }
+  }
 );
-
-
-SettingsStack.navigationOptions = {
-  tabBarLabel: 'Settings',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-options' : 'md-options'} />
-  ),
-};
-
-SettingsStack.path = '';
 
 const tabNavigator = createBottomTabNavigator({
   HomeStack,
-  SettingsStack,
+  SearchStack,
+  PostStack,
+  SettingsStack
 });
 
-tabNavigator.path = '';
+tabNavigator.path = "";
 
 export default tabNavigator;
