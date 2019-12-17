@@ -10,7 +10,8 @@ const styles = StyleSheet.create({
   },
   form: {
     ...globalStyles.form,
-    flex: 2
+    flex: 2,
+    alignContent:"center",
   },
   logo: {
     flex: 1,
@@ -23,6 +24,12 @@ const styles = StyleSheet.create({
   orText: {
     marginVertical: 10,
     alignSelf: "center"
+  },
+  avatarContainer:{
+    alignItems:"center",
+  },
+  avatarImage:{
+    backgroundColor: '#adadad'
   }
 });
 

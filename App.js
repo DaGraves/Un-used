@@ -4,10 +4,12 @@ import * as Font from 'expo-font';
 import React, { useState } from 'react';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
+import { User } from "./stores"
 import AppNavigator from './navigation/AppNavigator';
+console.disableYellowBox = true
 
 export default function App(props) {
+
   const [isLoadingComplete, setLoadingComplete] = useState(false);
 
   if (!isLoadingComplete && !props.skipLoadingScreen) {
