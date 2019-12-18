@@ -4,12 +4,13 @@ import globalStyles from "../global.styles";
 const styles = StyleSheet.create({
   ...globalStyles,
   body: {
+    flexGrow:1,
   },
   kav:{
-    flex: 1,
+    flexGrow:1
   },
   container: {
-    flex: 1,
+    flexGrow: 1,
     width: Dimensions.get("window").width,
   },
   cameraActionsWrapper: {
@@ -24,13 +25,14 @@ const styles = StyleSheet.create({
     marginLeft:"auto",
   },
   cameraWrapper:{
-    flex:1
+    flex:1,
   },
   camera:{
     flex:7,
   },
   uploadImage:{
-    flex:7,
+    flexGrow:1,
+    width: Dimensions.get("window").width
   },
   flip: {
     fontSize: 18,
@@ -52,6 +54,16 @@ const styles = StyleSheet.create({
     flexDirection:"row"
   },
 
+  confirmActionsBottomWrapper: {
+    bottom:0,
+    flexShrink:3,
+    padding:10,
+    width: Dimensions.get("window").width,
+    alignContent:"center",
+    justifyContent:"center",
+    flexDirection:"row"
+  },
+
   takePictureWrapper: {
     justifyContent:"center",
     flexGrow:1
@@ -61,7 +73,8 @@ const styles = StyleSheet.create({
     justifyContent:"center",
     alignContent:"center",
     flex:1,
-    textAlign:"center"
+    textAlign:"center",
+    marginHorizontal:10
   },
 
   cameraActionsBottomIcon: {

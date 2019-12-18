@@ -50,8 +50,7 @@ class PostScreen extends React.Component {
     if (status === 'granted') {
       const image = await ImagePicker.launchImageLibraryAsync()
       if(!image.cancelled){
-        console.log(image);
-        Post.uploadPicture = image
+        Post.createPostForm.uploadPicture = image
         this.props.navigation.navigate("Confirm")
       }
     }
@@ -60,8 +59,7 @@ class PostScreen extends React.Component {
   async takePicture() {
     try {
       let photo = await this.camera.takePictureAsync();
-      console.log(photo);
-      Post.uploadPicture = photo
+      Post.createPostForm.uploadPicture = photo
       this.props.navigation.navigate("Confirm")
     } catch (e) {
       alert(e);

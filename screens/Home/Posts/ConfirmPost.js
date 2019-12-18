@@ -4,7 +4,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   Dimensions,
-  Image
+  Image,
+  Alert
 } from "react-native";
 import { Post } from "../../../stores";
 import {
@@ -14,6 +15,10 @@ import {
   Body,
   Spinner,
   Content,
+  Form,
+  Item,
+  Label,
+  Input,
   Icon
 } from "native-base";
 import { observer } from "mobx-react";
@@ -25,46 +30,86 @@ import * as ImagePicker from "expo-image-picker";
 
 @observer
 class ConfirmPost extends React.Component {
+  async uploadPost() {
+    try {
+      const res = Post.createPost();
+      // TODO implement better toast messages
+      Alert.alert("Post created!", "Post was successfully created", [
+        { text: "OK", onPress: () => this.props.navigation.navigate("Home") }
+      ]);
+    } catch (e) {
+      alert(e);
+    }
+  }
+  componentDidMount() {
+    if (!Post.createPostForm.uploadPicture) {
+      this.props.navigation.goBack();
+    }
+  }
+
   render() {
     return (
       <Container>
         <Body style={styles.body}>
-          <KeyboardAwareScrollView
-            enableOnAndroid
-            contentContainerStyle={styles.kav}
-          >
-            <Content contentContainerStyle={styles.container}>
-              <View style={styles.cameraWrapper}>
-                <Image
-                  style={styles.uploadImage}
-                  source={{ uri: Post.uploadPicture.uri }}
-                  loadingIndicatorSource={<Spinner color="blue" width="50" />}
-                />
-                <View style={styles.cameraActionsBottomWrapper}>
-                  <TouchableOpacity
-                    style={styles.cameraActionsBottomIconWrapper}
-                    onPress={() => this.props.navigation.goBack()}
-                  >
-                    <Text style={styles.confirmActionText}>Cancel</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.cameraActionsBottomIconWrapper}
-                    onPress={() => this.props.navigation.goBack()}
-                  >
-                    <Text style={styles.confirmActionText}>Confirm</Text>
-                  </TouchableOpacity>
+          <Content contentContainerStyle={styles.container}>
+            {Boolean(Post.createPostForm.uploadPicture) && (
+              <>
+                <View style={{ flexGrow: 1 }}>
+                  <Image
+                    style={styles.uploadImage}
+                    resizeMode={"contain"}
+                    source={{ uri: Post.createPostForm.uploadPicture.uri }}
+                    loadingIndicatorSource={<Spinner color="blue" width="50" />}
+                  />
                 </View>
-              </View>
-            </Content>
-          </KeyboardAwareScrollView>
+                <View style={{ flexShrink: 1 }}>
+                  <Form style={{ paddingHorizontal: 20 }}>
+                    <Item stackedLabel>
+                      <Label>Description</Label>
+                      <Input
+                        onChangeText={value =>
+                          (Post.createPostForm.description = value)
+                        }
+                      />
+                    </Item>
+                  </Form>
+                </View>
+              </>
+            )}
+
+            {!Boolean(Post.createPostForm.uploadPicture) && (
+              <Spinner
+                color="blue"
+                width="50"
+                style={{ alignSelf: "center" }}
+              />
+            )}
+            <View style={styles.confirmActionsBottomWrapper}>
+              <Button
+                danger
+                disabled={Post.createPostForm.isLoading}
+                style={styles.cameraActionsBottomIconWrapper}
+                onPress={() => this.props.navigation.goBack()}
+              >
+                <Text style={styles.confirmActionText}>Cancel</Text>
+              </Button>
+              <Button
+                primary
+                disabled={Post.createPostForm.isLoading}
+                style={styles.cameraActionsBottomIconWrapper}
+                onPress={() => this.uploadPost()}
+              >
+                <Text style={styles.confirmActionText}>Confirm</Text>
+                {Post.createPostForm.isLoading && (
+                  <Spinner width="30" color="blue" />
+                )}
+              </Button>
+            </View>
+          </Content>
         </Body>
       </Container>
     );
   }
 }
-
-ConfirmPost.navigationOptions = {
-  header: null
-};
 
 export default ConfirmPost;

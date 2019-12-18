@@ -69,6 +69,7 @@ export default class SignUp extends React.Component {
                     <Input
                       onChangeText={value => (User.signUpForm.email = value)}
                       returnKeyType={"next"}
+                      keyboardType="email-address"
                       onSubmitEditing={() => {
                         this.refs._passwordInput.wrappedInstance.focus();
                       }}

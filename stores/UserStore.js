@@ -3,8 +3,9 @@ import RootStore from "./RootStore"
 import { AsyncStorage } from "react-native"
 import firebase from 'firebase';
 import db from '../config/firebase';
-import * as ImageManipulator from 'expo-image-manipulator'
 import uuid from 'uuid';
+import ImageUpload from "../utils/ImageUpload"
+
 class UserStore extends RootStore {
 
   @observable signInForm = {
@@ -52,8 +53,10 @@ class UserStore extends RootStore {
       this.signInForm.isLoadingSavedUser = true
       const auth = await firebase.auth()
       this.signInForm.isLoadingSavedUser = false
-      this.user = auth.currentUser
-      return await auth.currentUser;
+
+      const user = await this.getUser(auth.currentUser.uid)
+      this.user = user
+      return await user;
     }catch(e){
       console.log(e);
       return;
@@ -76,19 +79,12 @@ class UserStore extends RootStore {
   @action
   async uploadPhoto(image){
     try {
-      const resize = await ImageManipulator.manipulateAsync(image.uri, [], { format: 'jpeg', compress: 0.1 })
 
-      const blob = await new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest()
-        xhr.onload = () => resolve(xhr.response)
-        xhr.responseType = 'blob'
-        xhr.open('GET', resize.uri, true)
-        xhr.send(null)
-      });
-      const uploadTask = await firebase.storage().ref().child(uuid.v4()).put(blob)
-      const downloadURL = await uploadTask.ref.getDownloadURL()
-      this.signUpForm.photo = downloadURL
-      return downloadURL
+      const imageUrl = await ImageUpload(image.uri,{ format: 'jpeg', compress: 0.4 })
+      console.log(imageUrl);
+
+      this.signUpForm.photo = imageUrl
+      return imageUrl
     } catch(e) {
       let message = e
       if(e.message){
@@ -121,11 +117,10 @@ class UserStore extends RootStore {
       let user = userQuery.data()
 
       let posts = []
-      const postsQuery = await db.collection('posts').where('uid', '===', uid).get()
+      const postsQuery = await db.collection('posts').where('uid', '==', uid).get()
       postsQuery.forEach(function(response) {
         posts.push(response.data())
       })
-      user.posts = orderBy(posts, 'date','desc')
       return user
     } catch (e) {
       alert(e)
@@ -151,7 +146,7 @@ class UserStore extends RootStore {
           email: response.user.email,
           username: this.signUpForm.username,
           bio: this.signUpForm.bio,
-          photo: photoUrl,
+          photoUrl: photoUrl,
           token: null,
           followers: [],
           following: []
@@ -160,7 +155,6 @@ class UserStore extends RootStore {
         this.user = user
         this.signInForm.email = this.signUpForm.email
         this.signInForm.password = this.signUpForm.password
-        console.log("here");
         const resLogin = await this.login()
         this.signUpForm.isLoading = false
 
