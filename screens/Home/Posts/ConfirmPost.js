@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Dimensions,
-  Image,
-  Alert
-} from "react-native";
+import { View, StyleSheet, Image, Alert } from "react-native";
 import { Post } from "../../../stores";
 import {
   Button,
@@ -27,15 +20,32 @@ import { Camera } from "expo-camera";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import * as Permissions from "expo-permissions";
 import * as ImagePicker from "expo-image-picker";
+import { withNavigationFocus } from "react-navigation";
 
 @observer
 class ConfirmPost extends React.Component {
+  componentDidUpdate(props) {
+    if (props.isFocused) {
+      if (!Post.createPostForm.uploadPicture) {
+        this.props.navigation.goBack();
+      }
+    }
+  }
   async uploadPost() {
     try {
-      const res = Post.createPost();
+      const res = await Post.createPost();
       // TODO implement better toast messages
+
+      await Post.getPosts();
       Alert.alert("Post created!", "Post was successfully created", [
-        { text: "OK", onPress: () => this.props.navigation.navigate("Home") }
+        {
+          text: "OK",
+          onPress: async () => {
+            Post.createPostForm.description = "";
+            Post.createPostForm.uploadPicture = null;
+            this.props.navigation.navigate("Home");
+          }
+        }
       ]);
     } catch (e) {
       alert(e);
@@ -97,7 +107,7 @@ class ConfirmPost extends React.Component {
                 primary
                 disabled={Post.createPostForm.isLoading}
                 style={styles.cameraActionsBottomIconWrapper}
-                onPress={() => this.uploadPost()}
+                onPress={async () => await this.uploadPost()}
               >
                 <Text style={styles.confirmActionText}>Confirm</Text>
                 {Post.createPostForm.isLoading && (
@@ -112,4 +122,4 @@ class ConfirmPost extends React.Component {
   }
 }
 
-export default ConfirmPost;
+export default withNavigationFocus(ConfirmPost);

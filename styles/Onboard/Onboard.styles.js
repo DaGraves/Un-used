@@ -5,6 +5,7 @@ const styles = StyleSheet.create({
   ...globalStyles,
   container: {
     ...globalStyles.container,
+    padding: 50,
     alignItems: "center",
     justifyContent: "center"
   },

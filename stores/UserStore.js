@@ -81,8 +81,6 @@ class UserStore extends RootStore {
     try {
 
       const imageUrl = await ImageUpload(image.uri,{ format: 'jpeg', compress: 0.4 })
-      console.log(imageUrl);
-
       this.signUpForm.photo = imageUrl
       return imageUrl
     } catch(e) {
@@ -101,8 +99,8 @@ class UserStore extends RootStore {
       this.signInForm.isLoading = true
       const { email, password } = this.signInForm
       const response = await firebase.auth().signInWithEmailAndPassword(email, password)
-      this.signInForm.isLoading = false
       const currentUser = await this.getCurrentUser()
+      this.signInForm.isLoading = false
       return response
     } catch (e) {
       alert(e)
@@ -115,6 +113,8 @@ class UserStore extends RootStore {
     try {
       const userQuery = await db.collection('users').doc(uid).get()
       let user = userQuery.data()
+
+      console.log("user: ",user);
 
       let posts = []
       const postsQuery = await db.collection('posts').where('uid', '==', uid).get()

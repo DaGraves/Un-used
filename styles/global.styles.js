@@ -7,8 +7,7 @@ const styles = StyleSheet.create({
     paddingTop: 30
   },
   container: {
-    padding: 50,
-    flex: 1,
+    flexGrow: 1,
     width: Dimensions.get("window").width
   },
   form:{

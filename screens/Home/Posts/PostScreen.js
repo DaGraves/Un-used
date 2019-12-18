@@ -14,8 +14,8 @@ import { observer } from "mobx-react";
 import styles from "../../../styles/Home/Post.styles";
 import { Camera } from "expo-camera";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import * as Permissions from 'expo-permissions';
-import * as ImagePicker from 'expo-image-picker';
+import * as Permissions from "expo-permissions";
+import * as ImagePicker from "expo-image-picker";
 @observer
 class PostScreen extends React.Component {
   constructor(props) {
@@ -36,7 +36,6 @@ class PostScreen extends React.Component {
   }
 
   rotateCamera() {
-
     this.setState({
       type:
         this.state.type === Camera.Constants.Type.back
@@ -45,22 +44,24 @@ class PostScreen extends React.Component {
     });
   }
 
-  async openLibrary(){
-    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL)
-    if (status === 'granted') {
-      const image = await ImagePicker.launchImageLibraryAsync()
-      if(!image.cancelled){
-        Post.createPostForm.uploadPicture = image
-        this.props.navigation.navigate("Confirm")
+  async openLibrary() {
+    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    if (status === "granted") {
+      const image = await ImagePicker.launchImageLibraryAsync();
+      if (!image.cancelled) {
+        Post.createPostForm.uploadPicture = image;
+        this.props.navigation.navigate("Confirm");
       }
     }
   }
 
   async takePicture() {
     try {
+      Post.createPostForm.isLoadingPicture = true;
       let photo = await this.camera.takePictureAsync();
-      Post.createPostForm.uploadPicture = photo
-      this.props.navigation.navigate("Confirm")
+      Post.createPostForm.uploadPicture = photo;
+      Post.createPostForm.isLoadingPicture = false;
+      this.props.navigation.navigate("Confirm");
     } catch (e) {
       alert(e);
     }
@@ -93,15 +94,23 @@ class PostScreen extends React.Component {
               {this.state.finishedLoading && this.state.hasPermissions && (
                 <View style={styles.cameraWrapper}>
                   <Camera
-                    style={styles.camera}
+                    style={[styles.camera]}
                     type={this.state.type}
                     ref={ref => {
                       this.camera = ref;
                     }}
                   />
+                  {Post.createPostForm.isLoadingPicture && (
+                    <View
+                      style={styles.isLoadingPicture}
+                    >
+                      <Spinner color="white" />
+                    </View>
+                  )}
 
                   <View style={styles.cameraActionsBottomWrapper}>
                     <TouchableOpacity
+                      disabled={Post.createPostForm.isLoadingPicture}
                       style={styles.cameraActionsBottomIconWrapper}
                       onPress={() => this.rotateCamera()}
                     >
@@ -113,6 +122,7 @@ class PostScreen extends React.Component {
                     </TouchableOpacity>
 
                     <TouchableOpacity
+                      disabled={Post.createPostForm.isLoadingPicture}
                       style={styles.takePictureWrapper}
                       onPress={() => {
                         this.takePicture();
@@ -127,6 +137,7 @@ class PostScreen extends React.Component {
                     </TouchableOpacity>
 
                     <TouchableOpacity
+                      disabled={Post.createPostForm.isLoadingPicture}
                       style={styles.cameraActionsBottomIconWrapper}
                       onPress={() => this.openLibrary()}
                     >

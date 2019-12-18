@@ -59,9 +59,10 @@ export default class SignIn extends React.Component {
                 <View style={styles.form}>
                   <Form>
                     <Item stackedLabel>
-                      <Label>Username</Label>
+                      <Label>Email</Label>
                       <Input
                         onChangeText={value => (User.signInForm.email = value)}
+                        keyboardType="email-address"
                         returnKeyType={"next"}
                         onSubmitEditing={() => {
                           this.refs._passwordInput.wrappedInstance.focus();

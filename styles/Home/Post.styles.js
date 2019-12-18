@@ -28,7 +28,15 @@ const styles = StyleSheet.create({
     flex:1,
   },
   camera:{
-    flex:7,
+    flexGrow:1,
+  },
+  isLoadingPicture:{
+    position: "absolute",
+    top:"40%",
+    alignSelf: "center",
+    margin:"auto",
+    justifyContent:"center",
+    width:100
   },
   uploadImage:{
     flexGrow:1,
