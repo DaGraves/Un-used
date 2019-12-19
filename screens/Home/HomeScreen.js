@@ -26,7 +26,7 @@ import PostItem from "../../components/PostItem";
 export default class HomeScreen extends React.Component {
 
   async componentDidMount() {
-
+    await User.getCurrentUser()
     await Post.getPosts();
   }
 
@@ -46,7 +46,7 @@ export default class HomeScreen extends React.Component {
             }
           >
             {Post.postList.map(row => (
-              <PostItem key={row.id} row={row} />
+              <PostItem key={row.id} user={User.user} post={row} isCompetition/>
             ))}
           </ScrollView>
         </Body>

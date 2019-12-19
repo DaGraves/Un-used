@@ -1,5 +1,12 @@
 import React from "react";
-import { View, StyleSheet, Image, Dimensions } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Image,
+  Dimensions,
+  TouchableOpacity
+} from "react-native";
+import { User, Post } from "../stores";
 import {
   Button,
   Text,
@@ -13,38 +20,54 @@ import {
   Right,
   Spinner
 } from "native-base";
-import moment from "moment"
+import moment from "moment";
 
 export default function PostItem(props) {
-  const row = props.row
-  const imageHeight = Dimensions.get('window').height*0.55
+  const post = props.post;
+  const user = props.user;
+  const isCompetition = props.isCompetition
+  const imageHeight = Dimensions.get("window").height * 0.55;
+  const likesList = isCompetition ? post.likesDay : post.likes
+  const hasUserLiked = likesList ? likesList.includes(user.uid) : false;
+  const likesNumber = likesList ? likesList.length : 0
+
   return (
-    <Card style={{width:"100%"}}>
+    <Card style={{ width: "100%" }}>
       <CardItem>
         <Left>
-          <Thumbnail source={{ uri: row.photo }} />
+          <Thumbnail source={{ uri: post.photo }} />
           <Body>
-            <Text>{row.username}</Text>
-            <Text note>{moment(row.date).format("ll")}</Text>
+            <Text>{post.username}</Text>
+            <Text note>{moment(post.date).format("ll")}</Text>
           </Body>
         </Left>
       </CardItem>
       <CardItem cardBody bordered>
         <Image
-          source={{ uri: row.postPhoto }}
-          resizeMode="contain"
+          source={{ uri: post.postPhoto }}
+          resizeMode="stretch"
           loadingIndicatorSource={<Spinner color="blue" width="50" />}
-          style={{ width: 100,minHeight:imageHeight, flex: 1 }}
+          style={{ width: 100, minHeight: imageHeight, flex: 1 }}
         />
       </CardItem>
       <CardItem bordered>
-        <Text>{row.postDescription}</Text>
+        <Text>{post.postDescription}</Text>
       </CardItem>
       <CardItem bordered>
         <Left>
-          <Button transparent>
-            <Icon type="Ionicons" name="ios-heart-empty" />
-          </Button>
+          <TouchableOpacity
+            transparent
+            onPress={async () => {
+              Post.likePost(post);
+            }}
+          >
+            <Icon
+              type="Ionicons"
+              style={{ color: "black" }}
+              name={hasUserLiked ? "ios-heart" : "ios-heart-empty"}
+            />
+          </TouchableOpacity>
+          <Text>{likesNumber} likes</Text>
         </Left>
       </CardItem>
     </Card>

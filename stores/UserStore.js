@@ -56,6 +56,8 @@ class UserStore extends RootStore {
 
       const user = await this.getUser(auth.currentUser.uid)
       this.user = user
+      console.log("user: ",user);
+
       return await user;
     }catch(e){
       console.log(e);
