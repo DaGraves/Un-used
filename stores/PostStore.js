@@ -19,6 +19,7 @@ class PostStore extends RootStore {
 
   @observable isLoadingPostList = false;
   @observable postList = [];
+  @observable postDateFilter = new Date();
 
   @action
   async createPost() {
@@ -38,10 +39,13 @@ class PostStore extends RootStore {
         username: user.username,
         likes: [],
         likesCompetition: [],
+        likesCount:0,
+        likesDayCount:0,
         comments: [],
-        createdAt: new Date(),
+        createdAtDate: moment().startOf("day").toDate(),
         timestamp: moment().valueOf()
       };
+
       const res = await db
         .collection("posts")
         .doc(id)
@@ -58,28 +62,46 @@ class PostStore extends RootStore {
   }
 
   @action
-  async getPosts(date) {
+  async getPosts(opts) {
     try {
+      opts = opts || {}
+      const {orderBy,isCompetition,uid} = opts
+      let {date} = opts
       this.isLoadingPostList = true;
-      date = date || new Date();
-      date = moment(date)
-        .startOf("day")
-        .toDate();
-      const tomorrow = moment(date)
-        .add("1", "days")
-        .startOf("day");
-      const posts = await db
-        .collection("posts")
-        .where("createdAt", ">=", date)
-        .orderBy("createdAt", "desc")
-        .orderBy("timestamp", "desc")
-        .get();
+      this.postList = []
+      date = typeof date === "undefined" ? new Date() : date;
+      if(date){
+        date = moment(date)
+          .startOf("day")
+          .toDate();
+      }
+
+      let posts = await db.collection("posts")
+
+      if(date){
+        posts = posts.where("createdAtDate", "==", date);
+      }
+
+      if(uid){
+        posts = posts.where("uid","==",uid)
+      }
+
+      if (orderBy) {
+        for (let k in orderBy) {
+          const row = orderBy[k]
+          posts = posts.orderBy(row.field, row.order);
+        }
+      } else {
+        posts = posts.orderBy("timestamp", "desc");
+      }
+
+      posts = await posts.get();
 
       let array = [];
       posts.forEach(post => {
         array.push(post.data());
       });
-
+      console.log(array)
       this.postList = array;
       this.isLoadingPostList = false;
       return array;
@@ -98,23 +120,23 @@ class PostStore extends RootStore {
       let likes = [];
       let likesDayQuery = [];
       let likesDay = post.likesDay ? post.likesDay : [];
-      const isCompetition = moment().startOf("day").isSame(moment(post.timestamp).startOf("day"))
+      const isCompetition = moment()
+        .startOf("day")
+        .isSame(moment(post.date).startOf("day"));
 
-      if(isCompetition){
-        if (post.likesDay.includes(user.uid) ) {
+      if (isCompetition) {
+        if (post.likesDay && post.likesDay.includes(user.uid)) {
           likesDayQuery = firebase.firestore.FieldValue.arrayRemove(user.uid);
           likesDay = _.filter(likes, el => el.uid !== likes);
-        }else{
+        } else {
           likesDay.push(user.uid);
           likesDayQuery = firebase.firestore.FieldValue.arrayUnion(user.uid);
         }
       }
 
-      if (post.likes.includes(user.uid) ) {
+      if (post.likes.includes(user.uid)) {
         // User is unliking
         action = "UNLIKE";
-        console.log("WILL UNLIKE");
-
         likesQuery = firebase.firestore.FieldValue.arrayRemove(user.uid);
         likes = _.filter(likes, el => el.uid !== likes);
       } else {
@@ -124,23 +146,36 @@ class PostStore extends RootStore {
         likesQuery = firebase.firestore.FieldValue.arrayUnion(user.uid);
       }
 
-
+      const likesCount  = (likes ? likes : []).length
+      const likesDayCount  = (likesDay ? likesDay : []).length
 
       post.likes = likes;
-      if(isCompetition){
+      post.likesCount = likesCount;
+
+      if (isCompetition) {
         post.likesDay = likesDay;
+        post.likesDayCount = likesDayCount;
       }
-      let newPostList = _.filter(this.postList,(el) => el.id !== post.id)
-      newPostList.push(post)
-      newPostList = _.orderBy(newPostList,"timestamp","desc")
-      this.postList = newPostList
+
+      let newPostList = _.filter(this.postList, el => el.id !== post.id);
+      newPostList.push(post);
+
+      if(isCompetition){
+        newPostList = _.orderBy(newPostList, ["likesDayCount","timestamp"], ["desc","desc"]);
+      }else{
+        newPostList = _.orderBy(newPostList, ["timestamp"], ["desc"]);
+      }
+
+      this.postList = newPostList;
 
       await db
         .collection("posts")
         .doc(post.id)
         .update({
           likes: likesQuery,
-          likesDay:likesDayQuery
+          likesDay: likesDayQuery,
+          likesCount:likesCount,
+          likesDayCount:likesDayCount,
         });
 
       const res = await db
@@ -153,11 +188,11 @@ class PostStore extends RootStore {
           likerPhoto: user.photoUrl,
           likerName: user.username,
           uid: post.uid,
-          date: new Date().getTime(),
+          date: new Date(),
+          createdAtDate: moment().startOf("day").toDate(),
+          timestamp:moment().valueOf(),
           type: action
         });
-
-      console.log(res);
     } catch (e) {
       console.error(e);
     }

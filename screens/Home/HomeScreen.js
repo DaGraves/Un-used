@@ -22,12 +22,34 @@ import {
 import { observer } from "mobx-react";
 import styles from "../../styles/Home/Home.styles";
 import PostItem from "../../components/PostItem";
-@observer
-export default class HomeScreen extends React.Component {
+import { withNavigationFocus, StackActions} from "react-navigation";
 
-  async componentDidMount() {
-    await User.getCurrentUser()
-    await Post.getPosts();
+@observer
+class HomeScreen extends React.Component {
+  async componentWillMount() {
+    this.focusListener = this.props.navigation.addListener(
+      "didFocus",
+      async () => {
+        Post.isLoadingPostList = true
+        await User.getCurrentUser();
+        await Post.getPosts();
+      }
+    );
+    this.completeTransition();
+  }
+  completeTransition() {
+    const { navigation } = this.props;
+    const parent = navigation.dangerouslyGetParent();
+    navigation.dispatch(
+      StackActions.completeTransition({
+        key: parent.state.key,
+        toChildKey: parent.state.routes[parent.state.index].key
+      })
+    );
+  }
+  componentWillUnmount() {
+    // Remove the event listener
+    this.focusListener.remove();
   }
 
   render() {
@@ -45,8 +67,11 @@ export default class HomeScreen extends React.Component {
               />
             }
           >
-            {Post.postList.map(row => (
-              <PostItem key={row.id} user={User.user} post={row} isCompetition/>
+            {!Post.isLoadingPostList && Post.postList.length === 0 && (
+              <Text>No Posts were found</Text>
+            )}
+            {!Post.isLoadingPostList && Post.postList.map(row => (
+              <PostItem key={row.id} user={User.user} post={row} />
             ))}
           </ScrollView>
         </Body>
@@ -54,3 +79,5 @@ export default class HomeScreen extends React.Component {
     );
   }
 }
+
+export default withNavigationFocus(HomeScreen)

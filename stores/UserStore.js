@@ -24,6 +24,17 @@ class UserStore extends RootStore {
     isLoading:false
   }
 
+  @observable selectedUser = {
+    uid: "",
+    email: "",
+    username: "",
+    bio: "",
+    photo: '',
+    token: null,
+    followers: [],
+    following: []
+  }
+
   @observable user = {
     uid: "",
     email: "",

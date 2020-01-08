@@ -6,9 +6,6 @@ const styles = StyleSheet.create({
   body: {
     flexGrow:1,
   },
-  kav:{
-    flexGrow:1
-  },
   container: {
     flexGrow: 1,
     width: Dimensions.get("window").width,

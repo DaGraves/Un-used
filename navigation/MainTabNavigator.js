@@ -3,12 +3,19 @@ import { Platform, View, Text } from "react-native";
 import { createStackNavigator } from "react-navigation-stack";
 import { createBottomTabNavigator } from "react-navigation-tabs";
 import AppHeader from "../components/AppHeader";
+import PodiumFilled from "../assets/images/podium_filled.svg"
+import Podium from "../assets/images/podium.svg"
 
 import TabBarIcon from "../components/TabBarIcon";
 import HomeScreen from "../screens/Home/HomeScreen";
+import LeaderBoard from "../screens/Home/LeaderBoard";
 import PostScreen from "../screens/Home/Posts/PostScreen";
 import ConfirmPost from "../screens/Home/Posts/ConfirmPost";
+import ActivityScreen from "../screens/User/ActivityScreen";
+import UserProfile from "../screens/User/UserProfile";
 import SettingsScreen from "../screens/Home/SettingsScreen";
+import { SvgUri } from 'react-native-svg';
+
 
 const HomeStack = createStackNavigator(
   {
@@ -31,9 +38,34 @@ const HomeStack = createStackNavigator(
   }
 );
 
-const SearchStack = createStackNavigator(
+const LeaderBoardStack = createStackNavigator(
   {
-    Search: SettingsScreen
+    LeaderBoard: LeaderBoard
+  },
+  {
+    defaultNavigationOptions:{
+      header:<AppHeader/>
+    },
+    navigationOptions: {
+      tabBarLabel: <View />,
+      tabBarIcon: ({ focused }) => {
+
+        const ComponentTest = focused ? PodiumFilled : Podium
+        return (
+            <ComponentTest
+              width="100%"
+              height="100%"
+            />
+        )
+      }
+
+    }
+  }
+);
+
+const ActivityStack = createStackNavigator(
+  {
+    Activity: ActivityScreen
   },
   {
     defaultNavigationOptions: {
@@ -44,8 +76,8 @@ const SearchStack = createStackNavigator(
       tabBarIcon: ({ focused }) => (
         <TabBarIcon
           focused={focused}
-          type={focused ? "FontAwesome" : "Feather"}
-          name="search"
+          type="Ionicons"
+          name={focused ? "ios-heart" : "ios-heart-empty"}
         />
       )
     }
@@ -76,26 +108,24 @@ const PostStack = createStackNavigator(
         )
       }
     }
-
-
   }
 );
 
-const SettingsStack = createStackNavigator(
+const UserStack = createStackNavigator(
   {
-    Settings: SettingsScreen
+    UserProfile: UserProfile
   },
   {
-    defaultNavigationOptions: {
-      header: <AppHeader />
+    defaultNavigationOptions:{
+      header:<AppHeader/>
     },
     navigationOptions: {
       tabBarLabel: <View />,
       tabBarIcon: ({ focused }) => (
         <TabBarIcon
           focused={focused}
-          type="MaterialCommunityIcons"
-          name={`settings${focused ? "" : "-outline"}`}
+          type="FontAwesome"
+          name={`user${focused ? "" : "-o"}`}
         />
       )
     }
@@ -104,9 +134,10 @@ const SettingsStack = createStackNavigator(
 
 const tabNavigator = createBottomTabNavigator({
   HomeStack,
-  SearchStack,
+  LeaderBoardStack,
+  ActivityStack,
   PostStack,
-  SettingsStack
+  UserStack
 });
 
 export default tabNavigator;

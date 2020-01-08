@@ -18,7 +18,10 @@ const styles = StyleSheet.create({
   },
   column:{
     flexDirection:"column"
-  }
+  },
+  kav:{
+    flexGrow:1
+  },
 });
 
 export default styles;
