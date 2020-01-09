@@ -6560,6 +6560,11 @@ react-native-easy-grid@0.2.2:
   dependencies:
     lodash "^4.17.15"
 
+react-native-fullwidth-image@^0.1.3:
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/react-native-fullwidth-image/-/react-native-fullwidth-image-0.1.3.tgz#ad4d712e7e504660628d01649437d4eab49731ea"
+  integrity sha512-nFe5EAEPlPaT1vw1abwnNmSZN9oLMzNXJAKKxeuWqPI9L7rGhXhpZH4KEBUzbqkk+58TjdT9d2bf070/GB4PGQ==
+
 react-native-gesture-handler@~1.5.0:
   version "1.5.2"
   resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-1.5.2.tgz#281111550bf1eee10b7feba5278d142169892731"
@@ -6582,6 +6587,13 @@ react-native-keyboard-aware-scroll-view@0.9.1, react-native-keyboard-aware-scrol
   dependencies:
     prop-types "^15.6.2"
     react-native-iphone-x-helper "^1.0.3"
+
+react-native-lightbox@^0.8.1:
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/react-native-lightbox/-/react-native-lightbox-0.8.1.tgz#4e561ec46e61617a0f3f12c88ec2695360998878"
+  integrity sha512-TFZA6iKEEHpAUIXjMTRb6vx0/9rHgEKy3ZBiRAy295PwldYg5c8opwnbyURLIl522ykeqhVx9uGdXjSMIowLvA==
+  dependencies:
+    prop-types "^15.7.2"
 
 react-native-platform-touchable@^1.1.1:
   version "1.1.1"

@@ -22,6 +22,10 @@ const styles = StyleSheet.create({
   kav:{
     flexGrow:1
   },
+  center: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 export default styles;

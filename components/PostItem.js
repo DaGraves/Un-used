@@ -21,6 +21,7 @@ import {
   Spinner
 } from "native-base";
 import moment from "moment";
+import LightBoxImage from "./LightBoxImage"
 
 export default function PostItem(props) {
   const post = props.post;
@@ -42,14 +43,12 @@ export default function PostItem(props) {
     typeof props.showProfile === "undefined" ? true : Boolean(props.actions);
   return (
     <Card
-      style={
-        ([
-          {
-            width: "100%"
-          }
-        ],
-        props.cardStyles)
-      }
+      style={[
+        {
+          width: "100%"
+        },
+        props.cardStyles
+      ]}
     >
       {showProfile && (
         <CardItem>
@@ -62,13 +61,24 @@ export default function PostItem(props) {
           </Left>
         </CardItem>
       )}
+
       <CardItem cardBody bordered>
-        <Image
-          source={{ uri: post.postPhoto }}
-          resizeMode="stretch"
-          loadingIndicatorSource={<Spinner color="blue" width="50" />}
-          style={{ width: 100, minHeight: imageHeight, flex: 1 }}
-        />
+        {!props.preview && (
+          <Image
+            source={{ uri: post.postPhoto }}
+            resizeMode="contain"
+            loadingIndicatorSource={<Spinner color="blue" width="50" />}
+            style={{ width: 100, minHeight: imageHeight, flex: 1 }}
+          />
+        )}
+        {props.preview && (
+          <LightBoxImage
+            height={imageHeight}
+            source={{
+              uri: post.postPhoto
+            }}
+          />
+        )}
       </CardItem>
       {showActions && (
         <React.Fragment>

@@ -93,11 +93,46 @@ const styles = StyleSheet.create({
     color: "white",
     alignSelf:"center",
   },
-
   confirmActionText:{
     color:"white",
     alignSelf:"center"
-  }
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  reportButton: {
+    color: 'white',
+    borderWidth: 1,
+    borderColor: 'white',
+    padding: 4,
+    borderRadius: 3,
+    textAlign: 'center',
+    margin: 10,
+    alignSelf: 'flex-end',
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowRadius: 1.5,
+    shadowColor: 'black',
+    shadowOpacity: 0.8,
+  },
+  closeButton: {
+    fontSize: 35,
+    color: 'white',
+    lineHeight: 40,
+    width: 40,
+    textAlign: 'center',
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowRadius: 1.5,
+    shadowColor: 'black',
+    shadowOpacity: 0.8,
+  },
 });
 
 export default styles;
