@@ -50,7 +50,6 @@ class UserStore extends RootStore {
   async testHttp(){
     try{
       const res = await this.fetchRequest("http://example.com",{id:123},{method:"GET"})
-      console.log(res);
       return res
     }catch(e){
       console.log(e);
@@ -67,8 +66,6 @@ class UserStore extends RootStore {
 
       const user = await this.getUser(auth.currentUser.uid)
       this.user = user
-      console.log("user: ",user);
-
       return await user;
     }catch(e){
       console.log(e);
@@ -126,8 +123,6 @@ class UserStore extends RootStore {
     try {
       const userQuery = await db.collection('users').doc(uid).get()
       let user = userQuery.data()
-
-      console.log("user: ",user);
 
       let posts = []
       const postsQuery = await db.collection('posts').where('uid', '==', uid).get()

@@ -132,7 +132,7 @@ class UserProfile extends React.Component {
                 this.getPosts();
               }}
               refreshing={Post.isLoadingPostList}
-              data={Post.postList}
+              data={Post.postList.slice()}
               keyExtractor={item => JSON.stringify(item.id)}
               renderItem={({ item }) => this.renderList(item)}
               style={{ flex: 1 }}

@@ -10,6 +10,7 @@ import java.util.List;
 import expo.loaders.provider.interfaces.AppLoaderPackagesProviderInterface;
 import host.exp.exponent.generated.BasePackageList;
 import okhttp3.OkHttpClient;
+import expo.modules.payments.stripe.StripePackage;
 
 // Needed for `react-native link`
 // import com.facebook.react.ReactApplication;

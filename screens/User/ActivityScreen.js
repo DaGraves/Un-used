@@ -51,7 +51,7 @@ export default class ActivityScreen extends React.Component {
                 }}
                 refreshing={Activity.isLoadingActivityList}
                 data={Activity.activityList}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item) => JSON.stringify(item.id)}
                 renderItem={({ item }) => this.renderList(item)}
                 style={{flex:1}}
               />

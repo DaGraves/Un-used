@@ -16,6 +16,7 @@ import {
 } from "native-base";
 import { observer } from "mobx-react";
 import styles from "../../../styles/Home/Post.styles";
+import PayButton from "../../../components/PayButton"
 import { Camera } from "expo-camera";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import * as Permissions from "expo-permissions";
@@ -31,12 +32,11 @@ class ConfirmPost extends React.Component {
       }
     }
   }
+
   async uploadPost() {
     try {
-      const res = await Post.createPost();
       // TODO implement better toast messages
-
-      await Post.getPosts();
+      Post.createPostForm.isLoading = false;
       Alert.alert("Post created!", "Post was successfully created", [
         {
           text: "OK",
@@ -51,6 +51,7 @@ class ConfirmPost extends React.Component {
       alert(e);
     }
   }
+
   componentDidMount() {
     if (!Post.createPostForm.uploadPicture) {
       this.props.navigation.goBack();
@@ -95,6 +96,7 @@ class ConfirmPost extends React.Component {
               />
             )}
             <View style={styles.confirmActionsBottomWrapper}>
+
               <Button
                 danger
                 disabled={Post.createPostForm.isLoading}
@@ -103,17 +105,12 @@ class ConfirmPost extends React.Component {
               >
                 <Text style={styles.confirmActionText}>Cancel</Text>
               </Button>
-              <Button
-                primary
+
+              <PayButton
                 disabled={Post.createPostForm.isLoading}
-                style={styles.cameraActionsBottomIconWrapper}
-                onPress={async () => await this.uploadPost()}
-              >
-                <Text style={styles.confirmActionText}>Confirm</Text>
-                {Post.createPostForm.isLoading && (
-                  <Spinner width="30" color="blue" />
-                )}
-              </Button>
+                submit={async () => await this.uploadPost()}
+                isLoading={Post.createPostForm.isLoading}
+              />
             </View>
           </Content>
         </Body>

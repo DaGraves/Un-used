@@ -90,6 +90,7 @@ devicefarm {
 
 configurations.all {
   resolutionStrategy {
+    // resolutionStrategy.force 'com.android.support:design:27.1.0'
     force 'org.webkit:android-jsc:r245459'
   }
 }
@@ -151,6 +152,8 @@ dependencies {
   // expo-file-system
   implementation 'com.squareup.okhttp3:okhttp:3.10.0'
   implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
+  implementation project(':expo-payments-stripe')
+
 
   // Testing
   androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
@@ -172,22 +175,19 @@ dependencies {
   testImplementation 'junit:junit:4.12'
   testImplementation 'org.mockito:mockito-core:1.10.19'
 
-  
   implementation('host.exp.exponent:expoview:36.0.0@aar') {
     transitive = true
     exclude group: 'com.squareup.okhttp3', module: 'okhttp'
     exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
   }
-  
 
 
-  
   api 'org.webkit:android-jsc:r245459' // needs to be before react-native
   api 'com.facebook.react:react-native:33.0.0'
-  
+  api 'host.exp.exponent:expo-payments-stripe:2.0.0'
 
 
-  
+
   addUnimodulesDependencies([
       modulesPaths : [
         '../../node_modules'
@@ -203,7 +203,6 @@ dependencies {
         // from auto-generated BasePackageList.java
       ]
   ])
-  
 }
 
 // This has to be down here for some reason

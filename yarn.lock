@@ -3348,6 +3348,13 @@ expo-location@~8.0.0:
   dependencies:
     invariant "^2.2.4"
 
+expo-payments-stripe@^8.0.1:
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/expo-payments-stripe/-/expo-payments-stripe-8.0.1.tgz#8853a01644819cdf1ae51aad60cfcb891586cc56"
+  integrity sha512-47jaD98J+UDRKoI6otMc3y6K4qYZdrWwt1Y8cFwwyzBdrbz18a9A87qayBXAHCYkQnCqLSiTeETwQ0qyVAoHFw==
+  dependencies:
+    prop-types "^15.6.0"
+
 expo-permissions@~8.0.0:
   version "8.0.0"
   resolved "https://registry.yarnpkg.com/expo-permissions/-/expo-permissions-8.0.0.tgz#5a45e8451dd7ff37c9e6ce5e2447818372547813"
