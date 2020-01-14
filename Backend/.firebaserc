@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "taux-payments",
+    "taux": "taux-44e28"
+  }
+}
