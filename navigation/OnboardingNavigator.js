@@ -4,6 +4,7 @@ import { createStackNavigator } from 'react-navigation-stack';
 
 import SignIn from '../screens/Onboard/SignIn';
 import SignUp from '../screens/Onboard/SignUp';
+import Terms from '../screens/Onboard/Terms';
 
 
 const config = Platform.select({
@@ -14,7 +15,8 @@ const config = Platform.select({
 const OnboardStack = createStackNavigator(
   {
     SignIn: SignIn,
-    SignUp: SignUp
+    SignUp: SignUp,
+    Terms : Terms
   },
   config
 );

@@ -10,6 +10,7 @@ class UserStore extends RootStore {
 
   @observable signInForm = {
     email:"",
+    emailPaypal:"",
     password:"",
     isLoading:false,
     isLoadingSavedUser:true
@@ -17,16 +18,19 @@ class UserStore extends RootStore {
 
   @observable signUpForm = {
     email:"",
+    emailPaypal:"",
     password:"",
     username:"",
     bio:"",
     photo:"",
+    terms:false,
     isLoading:false
   }
 
   @observable selectedUser = {
     uid: "",
     email: "",
+    emailPaypal:"",
     username: "",
     bio: "",
     photo: '',
@@ -38,6 +42,7 @@ class UserStore extends RootStore {
   @observable user = {
     uid: "",
     email: "",
+    emailPaypal:"",
     username: "",
     bio: "",
     photo: '',
@@ -141,7 +146,7 @@ class UserStore extends RootStore {
       if(this.signUpForm.isLoading){
         return;
       }
-      const { email, password, username, bio } = this.signUpForm
+      const { email, password, username, bio, emailPaypal } = this.signUpForm
       this.signUpForm.isLoading = true
       const response = await firebase.auth().createUserWithEmailAndPassword(email, password)
       if(response.user.uid) {
@@ -152,8 +157,9 @@ class UserStore extends RootStore {
         const user = {
           uid: response.user.uid,
           email: response.user.email,
-          username: this.signUpForm.username,
-          bio: this.signUpForm.bio,
+          emailPaypal: emailPaypal,
+          username: username,
+          bio: bio,
           photoUrl: photoUrl,
           token: null,
           followers: [],

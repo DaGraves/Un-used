@@ -45,6 +45,32 @@ class PayButton extends React.Component {
 
   }
 
+  async initPayFunctionIos(post,charge){
+    try{
+      const { amount,currency,description } = charge
+      const options = {
+        total_price:amount,
+        currencyCode:currency,
+      }
+      const items = [
+        {
+          label:description,
+          amount:amount
+        }
+      ]
+
+      const token = await Stripe.paymentRequestWithApplePayAsync(items,options)
+
+      await Stripe.completeApplePayRequestAsync();
+      return token
+
+    }catch(e){
+      console.log(e)
+      Stripe.cancelApplePayRequestAsync()
+      Post.createPostForm.isLoading = false
+    }
+  }
+
   async initPayFunctionAndroid(post,charge){
     try{
       const { amount,currency,description } = charge
@@ -82,7 +108,7 @@ class PayButton extends React.Component {
         description:`Paid to post picture in Taux with ID: ${post.id}`
       }
       const initPayFunction = Platform.select({
-        ios:Stripe.paymentRequestWithApplePayAsync,
+        ios:this.initPayFunctionIos,
         android:this.initPayFunctionAndroid
       })
       const token = await initPayFunction(post,charge)
