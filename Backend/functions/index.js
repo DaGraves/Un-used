@@ -2,10 +2,122 @@ const functions = require("firebase-functions");
 const express = require("express");
 const cors = require("cors")({ origin: true });
 const app = express();
+const admin = require('firebase-admin');
+const moment = require("moment")
+const _ = require("lodash")
+const nodemailer = require('nodemailer');
+const config = require("./config.json")
+const serviceAccount = require("./taux.json");
 
-// TODO: Remember to set token using >> firebase functions:config:set stripe.token="SECRET_STRIPE_TOKEN_HERE"
-const stripe = require("stripe")(functions.config().stripe.token);
-// const stripe = require("stripe")("sk_test_pG5S9YWFSFO4JzLXAtJ6LlG200ujjX9XWS");
+const stripe = require("stripe")(config.stripe_key);
+let transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+      user: config.smtp_email,
+      pass: config.smtp_password
+  }
+});
+admin.initializeApp({
+  credential:admin.credential.cert(serviceAccount),
+  databaseURL: config.databaseURL,
+});
+
+exports.calculatePrizes = functions.pubsub.schedule('59 23 * * *')
+.onRun(async (context) => {
+  try{
+    const basePool = 250 // Base prize pool
+    const poolAddPerPost = 0.5 // How much of each post goes into the poo
+    const placesPercentages = [50,25,10,2,2] // Percentages each place take as a price
+    let numberPosts = 0
+
+    const date = moment(new Date())
+    .startOf("day")
+    .toDate();
+
+    const db = admin.firestore();
+    const postQuery = await db.collection("posts")
+    .where("paid", "==", true)
+    .where("createdAtDate", "==", date)
+    .orderBy("likesDayCount","desc")
+    .get();
+
+    let posts = [];
+    postQuery.forEach(post => {
+      posts.push(post.data());
+    });
+    numberPosts = posts.length
+
+    let userIds = _.map(posts,"uid")
+    let userQuery = db.collection("users")
+
+    if(userIds.length > 0 ){
+      userQuery = userQuery.where("uid","in",userIds)
+    }
+
+    userQuery = await userQuery.get();
+
+    let users = [];
+    userQuery.forEach(user => {
+      users.push(user.data());
+    });
+
+    const resultToEmail = []
+    let prizePool = basePool
+    const calculatedPrize = numberPosts * poolAddPerPost
+    let passedThreshold = false
+    if(calculatedPrize > basePool){
+      prizePool = calculatedPrize
+      passedThreshold = true
+    }
+    resultToEmail.push(`Has the competition of day ${date} passed the base pool prize : ${passedThreshold ? "Yes" : "No"}`)
+    resultToEmail.push(`Base Pool : ${basePool}`)
+    resultToEmail.push(`Number of posts : ${numberPosts}`)
+    resultToEmail.push(`Value added to pool per post : ${poolAddPerPost}`)
+    resultToEmail.push(`Percentages per place : ${placesPercentages}`)
+    resultToEmail.push(`Prize pool: ${prizePool}`)
+    resultToEmail.push(`\nWinners:\n`)
+    const numberOfPrizes = placesPercentages.length -1
+    let postsWithUser = []
+    for(let position = 0;position < posts.length;position++){
+      const post = posts[position]
+      const user = _.find(users,["uid",post.uid])
+      const percentagePrize = placesPercentages.shift()
+      if(percentagePrize){
+        const amount = prizePool * (percentagePrize * 0.01) // Converting percentage and calculates how much the user gets based on the prize pool and percentages positions
+        resultToEmail.push(`User "${user.username}" place nº "${position+1}" Amount:"$${amount}" Paypal: "${user.emailPaypal}" Email: "${user.email}" PostId: "${post.id}"`)
+      }
+      postsWithUser.push(post)
+      if(position >= numberOfPrizes){
+        break;
+      }
+    }
+
+    console.log("Calculations complete, preparing to send email")
+    const emailHtml = resultToEmail.join("\n<br>")
+    const mailOptions = {
+        to: config.email_destination,
+        subject: `Competition of date ${date.toLocaleDateString()}`,
+        html:`${emailHtml}`
+    };
+
+    return transporter.sendMail(mailOptions, (err, info) => {
+        if(err){
+          console.log("Error sending email! ",err)
+          return
+        }
+        console.log("Email sent!")
+        return
+
+    });
+
+  }catch(err){
+    console.log(err)
+  }
+
+  return null;
+});
+
+
 
 function charge(req, res) {
   const body = JSON.parse(JSON.stringify(req.body));

@@ -1,0 +1,7 @@
+{
+  "smtp_email" : "",
+  "smtp_password" : "",
+  "databaseURL" : "",
+  "stripe_key" : "",
+  "email_destination" : ""
+}
