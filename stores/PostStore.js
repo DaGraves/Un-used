@@ -8,7 +8,7 @@ import uuid from "uuid";
 import ImageUpload from "../utils/ImageUpload";
 import _ from "lodash";
 import moment from "moment";
-import { CHARGE_API_ENDPOINT } from 'react-native-dotenv'
+import { CHARGE_API_ENDPOINT,PRIZES_API_ENDPOINT } from 'react-native-dotenv'
 
 class PostStore extends RootStore {
   @observable createPostForm = {
@@ -21,6 +21,8 @@ class PostStore extends RootStore {
 
   @observable isLoadingPostList = false;
   @observable postList = [];
+  @observable prizesList = [];
+  @observable isLoadingPrizesList = false;
   @observable postDateFilter = new Date();
 
   @action
@@ -235,6 +237,33 @@ class PostStore extends RootStore {
       return success;
     } catch (e) {
       console.log(e);
+      return false;
+    }
+  }
+
+  @action
+  async calculatePrizes(date){
+    this.isLoadingPrizesList = true
+    try {
+      // const url = PRIZES_API_ENDPOINT
+      const url = "http://localhost:5000/taux-44e28/us-central1/prizes"
+      let success = false;
+
+      const res = await this.fetchRequest(url, {}, { method: "GET" });
+      const data = res.data;
+      console.log("res",res)
+      const body = JSON.parse(data.body);
+      if (body) {
+        this.prizesList = body.prizes
+        console.log(body)
+        success = true;
+      }
+      this.isLoadingPrizesList = false
+      return success;
+    } catch (e) {
+      console.log(e);
+      alert(e)
+      this.isLoadingPrizesList = false
       return false;
     }
   }

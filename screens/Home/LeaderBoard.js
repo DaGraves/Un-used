@@ -4,6 +4,7 @@ import {
   StyleSheet,
   Image,
   ScrollView,
+  FlatList,
   RefreshControl
 } from "react-native";
 import { User, Post } from "../../stores";
@@ -40,9 +41,11 @@ class LeaderBoard extends React.Component {
       Post.isLoadingPostList = true
       await User.getCurrentUser();
       await this.getPosts();
+      await Post.calculatePrizes();
     });
     this.completeTransition();
   }
+
   completeTransition() {
     const { navigation } = this.props;
     const parent = navigation.dangerouslyGetParent();
@@ -53,6 +56,7 @@ class LeaderBoard extends React.Component {
       })
     );
   }
+
   componentWillUnmount() {
     // Remove the event listener
     this.focusListener.remove();
@@ -78,6 +82,22 @@ class LeaderBoard extends React.Component {
       return "Select date";
     }
     return moment(date).format("YYYY-MM-DD");
+  }
+
+  renderList = (item) => {
+
+    return (
+      <View style={{flexShrink:1,marginRight:30}}>
+        <View style={styles.row}>
+          <View style={styles.circlePrize}>
+            <Text>{item.place}</Text>
+          </View>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.gray}> ${item.amount}</Text>
+        </View>
+      </View>
+    )
   }
 
   render() {
@@ -122,7 +142,23 @@ class LeaderBoard extends React.Component {
               />
             }
           >
+          {/* Post.prizesList.map */}
             {!Post.isLoadingPostList && Post.postList.length === 0 && <Text>No Posts were found</Text>}
+            {!Post.isLoadingPostList && (
+              <React.Fragment>
+                <View style={styles.row}>
+                  <Text>Prizes</Text>
+                </View>
+                <FlatList
+                  horizontal
+                  data={Post.prizesList}
+                  keyExtractor={(item) => JSON.stringify(item.place)}
+                  renderItem={({ item }) => this.renderList(item)}
+                  contentContainerStyle={{alignItems:"center", justifyContent: 'center'}}
+                  style={{flex:1,width:"100%"}}
+                />
+              </React.Fragment>
+            )}
             {!Post.isLoadingPostList &&
               Post.postList.map(row => {
                 const pos = (likeNumbersKeyVal[row.likesDayCount]) || 0

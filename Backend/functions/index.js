@@ -22,8 +22,9 @@ admin.initializeApp({
   databaseURL: config.databaseURL,
 });
 
-exports.calculatePrizes = functions.pubsub.schedule('59 23 * * *')
-.onRun(async (context) => {
+
+async function calculatePrizes(skipEmail){
+  skipEmail = skipEmail || false
   try{
     const basePool = 250 // Base prize pool
     const poolAddPerPost = 0.5 // How much of each post goes into the poo
@@ -78,13 +79,25 @@ exports.calculatePrizes = functions.pubsub.schedule('59 23 * * *')
     resultToEmail.push(`\nWinners:\n`)
     const numberOfPrizes = placesPercentages.length -1
     let postsWithUser = []
+    const prizesPerPlace = []
+
+    for(let pos = 0; pos < placesPercentages.length;pos++){
+      //Calculates how much each place makes
+      const place = pos+1;
+      const percentagePrize = placesPercentages[pos]
+      const amount = prizePool * (percentagePrize * 0.01) // Converting percentage and calculates how much the user gets based on the prize pool and percentages positions
+      prizesPerPlace.push({place,amount})
+    }
+
+
     for(let position = 0;position < posts.length;position++){
       const post = posts[position]
       const user = _.find(users,["uid",post.uid])
       const percentagePrize = placesPercentages.shift()
       if(percentagePrize){
+        const place = position+1;
         const amount = prizePool * (percentagePrize * 0.01) // Converting percentage and calculates how much the user gets based on the prize pool and percentages positions
-        resultToEmail.push(`User "${user.username}" place nº "${position+1}" Amount:"$${amount}" Paypal: "${user.emailPaypal}" Email: "${user.email}" PostId: "${post.id}"`)
+        resultToEmail.push(`User "${user.username}" place nº "${place}" Amount:"$${amount}" Paypal: "${user.emailPaypal}" Email: "${user.email}" PostId: "${post.id}"`)
       }
       postsWithUser.push(post)
       if(position >= numberOfPrizes){
@@ -92,29 +105,38 @@ exports.calculatePrizes = functions.pubsub.schedule('59 23 * * *')
       }
     }
 
-    console.log("Calculations complete, preparing to send email")
-    const emailHtml = resultToEmail.join("\n<br>")
-    const mailOptions = {
-        to: config.email_destination,
-        subject: `Competition of date ${date.toLocaleDateString()}`,
-        html:`${emailHtml}`
-    };
+    console.log("Calculations complete")
+    if(!skipEmail){
+      console.log("Preparing to send email")
+      const emailHtml = resultToEmail.join("\n<br>")
+      const mailOptions = {
+          to: config.email_destination,
+          subject: `Competition of date ${date.toLocaleDateString()}`,
+          html:`${emailHtml}`
+      };
 
-    return transporter.sendMail(mailOptions, (err, info) => {
-        if(err){
-          console.log("Error sending email! ",err)
+      return transporter.sendMail(mailOptions, (err, info) => {
+          if(err){
+            console.log("Error sending email! ",err)
+            return
+          }
+          console.log("Email sent!")
           return
-        }
-        console.log("Email sent!")
-        return
 
-    });
+      });
+    }
+    return prizesPerPlace
 
   }catch(err){
     console.log(err)
   }
 
   return null;
+}
+
+exports.calculatePrizes = functions.pubsub.schedule('59 23 * * *')
+.onRun(async (context) => {
+  calculatePrizes()
 });
 
 
@@ -159,6 +181,25 @@ function send(res, code, body) {
 }
 
 app.use(cors);
+
+app.get("/", async (req,res) => {
+  try {
+    const prizes = await calculatePrizes(true);
+    send(res, 200, {
+      prizes:prizes,
+      success: true
+    });
+  } catch (e) {
+    console.log(e);
+    send(res, 500, {
+      error: `The server received an unexpected error. Please try again and contact the site admin if the error persists.`,
+      errorStack: e,
+      errorMsg: e.message,
+      success: false
+    });
+  }
+});
+
 app.post("/", (req, res) => {
   // Catch any unexpected errors to prevent crashing
   try {
@@ -175,3 +216,4 @@ app.post("/", (req, res) => {
 });
 
 exports.charge = functions.https.onRequest(app);
+exports.prizes = functions.https.onRequest(app);

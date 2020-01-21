@@ -55,9 +55,6 @@ export default class RootStore {
   fetchRequest = async (url, params, fetchOpts) => {
     console.log("Fetching to url :", url)
     let body = params
-    if(fetchOpts.formData){
-      body = params
-    }
     const method = fetchOpts.method ? fetchOpts.method : "GET"
 
     const headers = this.headers(url, Boolean(fetchOpts.formData))
@@ -75,7 +72,6 @@ export default class RootStore {
       return res
     }catch(err){
       console.log(err);
-      return err
     }
   }
 
