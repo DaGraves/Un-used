@@ -30,7 +30,7 @@
     "expo-web-browser": "~8.0.0",
     "expokit": "36.0.0",
     "firebase": "^7.5.2",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "mobx": "^5.15.0",
     "mobx-react": "^6.1.4",
     "moment": "^2.24.0",
